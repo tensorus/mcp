@@ -73,6 +73,88 @@ async def example():
         print(f"Ingested tensor with ID: {result['record_id']}")
 ```
 
+## MCP Demo Script
+
+### Prerequisites
+
+* Tensorus MCP Server running (`python -m tensorus_mcp.server`)
+* For live mode: Tensorus backend API accessible
+* For demo mode: No additional setup required
+
+### Demo Scenario: MCP Client Interaction
+
+**Goal:** Demonstrate how an external AI agent can leverage Tensorus via MCP.
+
+1. **Start MCP Server:**
+   ```bash
+   python -m tensorus_mcp.server --demo-mode
+   ```
+
+2. **Connect via Python Client:**
+   ```python
+   from tensorus_mcp.client import TensorusMCPClient
+   
+   async def demo():
+       async with TensorusMCPClient.from_http("http://localhost:8000/mcp/") as client:
+           # List available datasets
+           datasets = await client.list_datasets()
+           print(f"Available datasets: {datasets}")
+           
+           # Create a new dataset
+           result = await client.create_dataset("demo_dataset")
+           print(f"Created dataset: {result}")
+           
+           # Ingest sample tensor data
+           tensor_result = await client.ingest_tensor(
+               dataset_name="demo_dataset",
+               tensor_shape=[3, 3],
+               tensor_dtype="float32",
+               tensor_data=[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]],
+               metadata={"source": "mcp_demo", "type": "sample_matrix"}
+           )
+           print(f"Ingested tensor: {tensor_result}")
+           
+           # Apply tensor operation (transpose)
+           op_result = await client.apply_operation(
+               operation="transpose",
+               dataset_name="demo_dataset",
+               record_id=tensor_result["record_id"],
+               dim0=0,
+               dim1=1
+           )
+           print(f"Applied transpose operation: {op_result}")
+   ```
+
+3. **Conceptual Client Interaction (JavaScript):**
+   ```javascript
+   // Example of how other AI agents could interact via MCP
+   async function mcpDemo() {
+       // List available tools
+       const { tools } = await client.request({ method: 'tools/list' }, {});
+       console.log("Available Tensorus Tools:", tools.map(t => t.name));
+       
+       // Create dataset via MCP
+       const createResponse = await client.request({ method: 'tools/call' }, {
+           name: 'tensorus_create_dataset',
+           arguments: { dataset_name: 'mcp_demo_dataset' }
+       });
+       console.log("Dataset created:", createResponse.content[0].text);
+       
+       // Ingest tensor via MCP
+       const ingestResponse = await client.request({ method: 'tools/call' }, {
+           name: 'tensorus_ingest_tensor',
+           arguments: {
+               dataset_name: 'mcp_demo_dataset',
+               tensor_shape: [2, 2],
+               tensor_dtype: 'float32',
+               tensor_data: [[1.0, 2.0], [3.0, 4.0]],
+               metadata: { source: 'mcp_demo' }
+           }
+       });
+       console.log("Tensor ingested:", ingestResponse.content[0].text);
+   }
+   ```
+
 ## Available MCP Tools
 
 ### Dataset Management
