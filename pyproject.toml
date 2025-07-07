@@ -1,0 +1,57 @@
+[project]
+name = "tensorus-mcp"
+version = "0.0.1"
+authors = [
+    { name = "Tensorus Team", email = "ai@tensorus.com" }
+]
+description = "Model Context Protocol (MCP) server and client for Tensorus tensor database"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+keywords = [
+    "mcp", "model-context-protocol", "tensor", "database", "ai", "pytorch", "fastapi"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries"
+]
+
+dependencies = [
+    "fastmcp>=0.2.0",
+    "httpx>=0.24.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0"
+]
+
+[project.optional-dependencies]
+examples = [
+    "streamlit>=1.25.0",
+    "pandas>=1.5.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/tensorus/mcp"
+Repository = "https://github.com/tensorus/mcp"
+Documentation = "https://github.com/tensorus/mcp#readme"
+"Bug Tracker" = "https://github.com/tensorus/mcp/issues"
+
+[project.scripts]
+tensorus-mcp-server = "tensorus_mcp.server:main"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tensorus_mcp*"]
+namespaces = false
