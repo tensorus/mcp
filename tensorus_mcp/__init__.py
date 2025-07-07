@@ -8,7 +8,7 @@ __version__ = "1.0.0"
 __author__ = "Tensorus Team"
 __email__ = "ai@tensorus.com"
 
-from .client import TensorusMCPClient
+from .client import TensorusMCPClient, DEFAULT_MCP_URL
 from .server import create_mcp_app
 
-__all__ = ["TensorusMCPClient", "create_mcp_app"]
+__all__ = ["TensorusMCPClient", "create_mcp_app", "DEFAULT_MCP_URL"]

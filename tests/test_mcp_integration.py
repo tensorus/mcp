@@ -7,7 +7,7 @@ import asyncio
 import sys
 import uuid
 
-from tensorus.mcp_client import (
+from tensorus_mcp.client import (
     TensorusMCPClient,
     DatasetListResponse,
     CreateDatasetResponse,
@@ -22,26 +22,23 @@ pytestmark = pytest.mark.skipif(not MCP_AVAILABLE, reason="MCP dependencies (fas
 
 @pytest_asyncio.fixture(scope="session")
 async def mcp_servers():
-    api_process = None
+    api_process = None # This will be removed
     mcp_server_process = None
-    api_url = "http://localhost:8000"
-    mcp_url = "http://localhost:7860/mcp"
+    # api_url will be unused as MCP server runs in demo mode
+    api_url = "http://localhost:8000" # Kept for now, but MCP server won't use it.
+    mcp_url = "http://localhost:7860/mcp" # This needs to match the server's path
 
-    api_logs = []
+    api_logs = [] # This will be empty
     mcp_logs = []
 
     try:
-        print("\nStarting FastAPI backend...")
-        api_process = subprocess.Popen(
-            [sys.executable, "-m", "uvicorn", "tensorus.api:app", "--port", "8000", "--log-level", "warning"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        )
+        # Removed FastAPI backend startup
+        # print("\nStarting FastAPI backend...")
+        # api_process = subprocess.Popen(...)
 
-        print("Starting MCP server...")
+        print("Starting MCP server in demo mode...")
         mcp_server_process = subprocess.Popen(
-            [sys.executable, "tensorus/mcp_server.py", "--port", "7860", "--api-url", api_url, "--transport", "streamable-http"],
+            [sys.executable, "-m", "tensorus_mcp.server", "--port", "7860", "--demo-mode", "--transport", "streamable-http", "--path", "/mcp"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True
@@ -75,11 +72,7 @@ async def mcp_servers():
                     await asyncio.sleep(poll_interval)
 
         if not mcp_ready:
-            if api_process:
-                api_process.terminate()
-                stdout, stderr = api_process.communicate(timeout=5)
-                api_logs.append("API STDOUT:\n" + stdout)
-                api_logs.append("API STDERR:\n" + stderr)
+                # api_process was removed
             if mcp_server_process:
                 mcp_server_process.terminate()
                 stdout, stderr = mcp_server_process.communicate(timeout=5)
@@ -110,23 +103,23 @@ async def mcp_servers():
                 mcp_server_process.kill()
                 processes_terminated = False
 
-        if api_process:
-            print("Terminating FastAPI backend...")
-            api_process.terminate()
-            try:
-                stdout, stderr = api_process.communicate(timeout=10)
-                api_logs.append("API STDOUT at shutdown:\n" + stdout)
-                api_logs.append("API STDERR at shutdown:\n" + stderr)
-            except subprocess.TimeoutExpired:
-                print("API server communicate timeout, killing.")
-                api_process.kill()
-                processes_terminated = False
-            if api_process.poll() is None:
-                print("API server did not terminate gracefully, killing.")
-                api_process.kill()
-                processes_terminated = False
+        # if api_process: # api_process was removed
+        #     print("Terminating FastAPI backend...")
+        #     api_process.terminate()
+        #     try:
+        #         stdout, stderr = api_process.communicate(timeout=10)
+        #         api_logs.append("API STDOUT at shutdown:\n" + stdout)
+        #         api_logs.append("API STDERR at shutdown:\n" + stderr)
+        #     except subprocess.TimeoutExpired:
+        #         print("API server communicate timeout, killing.")
+        #         api_process.kill()
+        #         processes_terminated = False
+        #     if api_process.poll() is None:
+        #         print("API server did not terminate gracefully, killing.")
+        #         api_process.kill()
+        #         processes_terminated = False
 
-        print("\nCaptured API logs:\n" + "\n".join(api_logs))
+        # print("\nCaptured API logs:\n" + "\n".join(api_logs)) # api_logs will be empty
         print("\nCaptured MCP logs:\n" + "\n".join(mcp_logs))
 
         if not processes_terminated:
