@@ -4,8 +4,8 @@ import pytest
 import httpx
 from typing import Optional
 
-from tensorus_mcp import mcp_server
-from tensorus_mcp.mcp_server import MCP_AVAILABLE
+from tensorus_mcp import server as mcp_server
+from tensorus_mcp.server import MCP_AVAILABLE
 from tensorus_mcp.config import settings
 
 pytestmark = pytest.mark.skipif(
@@ -61,12 +61,11 @@ def make_mock_client(
 
 def test_create_empty_mcp_server():
     """Test that we can create an empty MCP server."""
-    server = mcp_server.create_server()
+    server = mcp_server.create_mcp_app()
     assert server is not None
 
 
 def test_settings_import():
     """Test that we can import and use settings."""
     assert settings is not None
-    assert hasattr(settings, 'tensorus_api_base_url')
-EOF < /dev/null
+    assert hasattr(settings, 'API_BASE_URL')

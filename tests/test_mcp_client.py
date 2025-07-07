@@ -1,8 +1,8 @@
 import json
 import pytest
 
-from tensorus_mcp import mcp_client
-from tensorus_mcp.mcp_client import (
+from tensorus_mcp import client as mcp_client
+from tensorus_mcp.client import (
     TensorusMCPClient, TextContent, MCPResponseError, FastMCPError,
     DatasetListResponse, IngestTensorResponse, TensorDetailsResponse, SemanticMetadataResponse,
     MCP_AVAILABLE
@@ -385,4 +385,3 @@ async def test_call_json_validation_error_after_fallbacks(dummy_fast_client):
 # test_ingest_tensor, for example, relied on a simple hardcoded response.
 # The new DummyFastClient's default behavior for "tensorus_ingest_tensor" still provides
 # {"id": "tensor_id_123", "status": "ingested"}, so test_ingest_tensor should still pass.
-EOF < /dev/null
